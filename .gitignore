@@ -19,3 +19,11 @@ backend/notebooks/chroma_store_langchain/
 
 # SQLite
 *.db
+# Generated user data
+backend/user_data/
+
+# Vector stores
+**/vectorstore/
+
+# Chroma databases
+**/chroma.sqlite3
