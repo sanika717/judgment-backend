@@ -1,34 +1,21 @@
-# Python
+# Python virtual environments
 venv/
 .venv/
-**/venv/
+backend/venv/
+backend/.venv/
+
+# Python cache
 __pycache__/
 *.pyc
 
 # Node
 node_modules/
-dist/
 
-# Environment
+# Environment variables
 .env
 
-# macOS
-.DS_Store
+# Chroma vector database
+backend/notebooks/chroma_store_langchain/
 
-# VS Code
-.vscode/
-
-# Databases
+# SQLite
 *.db
-
-# Vector databases
-vectorstore/
-chroma/
-chroma_db/
-
-# User uploads
-user_data/
-uploads/
-
-# Logs
-*.log
