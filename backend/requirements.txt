@@ -1,0 +1,33 @@
+# Core FastAPI + Server
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+
+# Database & persistence
+sqlalchemy==2.0.35
+
+# Environment
+python-dotenv==1.0.1
+
+# Embeddings
+sentence-transformers==2.7.0   # upgraded to fix huggingface conflict
+
+# Vector DB
+chromadb==0.5.11
+
+# PDF / CSV loaders + OCR fallback
+pypdf==4.3.1
+pdf2image==1.17.0
+pillow==10.4.0
+pandas==2.2.3
+
+# PDF generation for bilingual outputs
+reportlab==4.2.2
+
+# Utils
+typing_extensions>=4.8.0
+
+# LangChain ecosystem (compatible set)
+langchain==0.3.7
+langchain-core==0.3.15
+langchain-community==0.3.3
+langchain-huggingface==0.1.0
