@@ -1,14 +1,32 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter
+from fastapi import Depends
+
+from sqlalchemy.orm import Session
+
+from database.session import get_db
+
+from repositories.message_repository import (
+    MessageRepository
+)
 
 router = APIRouter()
 
-class HistoryResponse(BaseModel):
-    success: bool
-    message: str
-    data: dict | None = None
 
+@router.get("/{session_id}")
+def get_chat_history(
+    session_id: int,
+    db: Session = Depends(get_db)
+):
 
-@router.get("/sessions", response_model=HistoryResponse)
-async def sessions(user_id: str):
-    raise HTTPException(status_code=501, detail="History sessions listing not implemented yet")
+    messages = (
+        MessageRepository
+        .get_session_messages(
+            db,
+            session_id
+        )
+    )
+
+    return {
+        "success": True,
+        "data": messages
+    }

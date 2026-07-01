@@ -1,14 +1,26 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter
+from fastapi import Depends
+
+from api.dependencies import (
+    get_current_user
+)
 
 router = APIRouter()
 
-class UserProfileResponse(BaseModel):
-    success: bool
-    message: str
-    data: dict | None = None
 
+@router.get("/me")
+def current_user(
+    user=Depends(
+        get_current_user
+    )
+):
 
-@router.get("/profile", response_model=UserProfileResponse)
-async def profile(user_id: str):
-    raise HTTPException(status_code=501, detail="User profile not implemented yet")
+    return {
+        "success": True,
+        "data": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role
+        }
+    }

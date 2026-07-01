@@ -20,8 +20,8 @@ from chat_history_db import (
     save_user_chat_history,
     get_all_sessions
 )
-from src.doc_utils import process_single_doc, load_user_vectorstore
-from vectorstore import delete_file_embeddings
+from backend.services.document.doc_utils import process_single_doc, load_user_vectorstore
+from backend.vector_store.vectorstore import delete_file_embeddings
 from rag_pipeline import build_rag_chain
 
 router = APIRouter()

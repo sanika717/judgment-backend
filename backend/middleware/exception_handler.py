@@ -1,15 +1,19 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
+from fastapi import Request
 from fastapi.responses import JSONResponse
 
 
-def setup_exception_handlers(app: FastAPI) -> None:
+def register_exception_handlers(app: FastAPI):
+
     @app.exception_handler(Exception)
-    async def generic_exception_handler(request: Request, exc: Exception):
+    async def global_exception_handler(
+        request: Request,
+        exc: Exception
+    ):
         return JSONResponse(
             status_code=500,
             content={
                 "success": False,
-                "message": "Internal server error",
-                "data": {"error": str(exc)},
-            },
+                "message": str(exc)
+            }
         )

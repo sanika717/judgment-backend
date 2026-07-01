@@ -1,11 +1,20 @@
 import logging
+import os
+
+from config.settings import settings
 
 
-def configure_logging() -> None:
+def setup_logging():
+
+    os.makedirs("logs", exist_ok=True)
+
     logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+        level=settings.LOG_LEVEL,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        handlers=[
+            logging.FileHandler(settings.LOG_FILE),
+            logging.StreamHandler()
+        ]
     )
 
-    logging.getLogger("uvicorn.error").setLevel(logging.INFO)
-    logging.getLogger("uvicorn.access").setLevel(logging.INFO)
+    return logging.getLogger("legal-ai")

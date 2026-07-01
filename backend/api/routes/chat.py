@@ -1,14 +1,46 @@
-from fastapi import APIRouter, Form, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+
+from sqlalchemy.orm import Session
+
+from database.session import get_db
+
+from schemas.chat import ChatRequest
+
+from services.chat.chat_service import (
+    ChatService
+)
 
 router = APIRouter()
 
-class ChatResponse(BaseModel):
-    success: bool
-    message: str
-    data: dict | None = None
 
+@router.post("/")
+async def chat(
+    payload: ChatRequest,
+    db: Session = Depends(get_db)
+):
 
-@router.post("/query", response_model=ChatResponse)
-async def query(user_id: str = Form(...), session_id: str = Form(...), message: str = Form(...)):
-    raise HTTPException(status_code=501, detail="Chat query not implemented yet")
+    try:
+
+        answer = ChatService.ask(
+            db=db,
+            document_id=payload.document_id,
+            session_id=payload.session_id,
+            question=payload.question,
+            language=payload.language
+        )
+
+        return {
+            "success": True,
+            "data": {
+                "answer": answer
+            }
+        }
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )

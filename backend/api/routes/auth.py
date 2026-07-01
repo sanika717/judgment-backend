@@ -1,18 +1,85 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+from api.dependencies import get_current_user
+from fastapi import Depends
+from database.session import get_db
+
+from schemas.auth import (
+    RegisterRequest,
+    LoginRequest
+)
+
+from services.auth.auth_service import AuthService
+
 
 router = APIRouter()
 
-class LoginRequest(BaseModel):
-    username: str
-    password: str
+
+@router.post("/register")
+def register(
+    payload: RegisterRequest,
+    db: Session = Depends(get_db)
+):
+
+    try:
+
+        result = AuthService.register(
+            db=db,
+            username=payload.username,
+            email=payload.email,
+            password=payload.password
+        )
+
+        return result
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
+@router.post("/login")
+def login(
+    payload: LoginRequest,
+    db: Session = Depends(get_db)
+):
+
+    try:
+
+        return AuthService.login(
+            db=db,
+            email=payload.email,
+            password=payload.password
+        )
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=401,
+            detail=str(e)
+        )
 
 
-@router.post("/login", response_model=TokenResponse)
-async def login(request: LoginRequest):
-    raise HTTPException(status_code=501, detail="Authentication not implemented yet")
+@router.get("/test")
+def auth_test():
+
+    return {
+        "success": True,
+        "message": "Auth route working"
+    }
+@router.get("/me")
+def profile(
+    user=Depends(get_current_user)
+):
+
+    return {
+        "success": True,
+        "data": {
+            "username": user.username,
+            "email": user.email
+        }
+    }
