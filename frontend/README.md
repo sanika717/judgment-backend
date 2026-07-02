@@ -1,31 +1,75 @@
-# Legal RAG - Frontend (Vite + React + TypeScript + Tailwind)
+# React + TypeScript + Vite
 
-This is a ready-to-run frontend designed to work with your existing FastAPI backend.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## How to run
+Currently, two official plugins are available:
 
-1. Install Node (recommend Node 18+; Node 20+ is preferred).
-2. From this folder run:
-   ```bash
-   npm install
-   npm run dev
-   ```
-3. Open the site at http://localhost:5173
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Environment
-Create a `.env` file (in the project root) with:
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+
 ```
-VITE_API_URL=http://127.0.0.1:8000
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+
 ```
-Change it if your backend runs elsewhere.
-
-## Notes
-- This frontend expects backend routes:
-  - POST /auth/register
-  - POST /auth/login
-  - POST /create-session?user_id=...
-  - POST /upload (form-data user_id, session_id, file)
-  - GET /list-files?user_id=...&session_id=...
-  - POST /chat (form-data user_id, session_id, message)
-- Session id is stored in `sessionStorage` and is not printed in the UI.
-

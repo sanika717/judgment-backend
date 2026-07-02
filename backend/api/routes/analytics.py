@@ -33,3 +33,13 @@ def dashboard(
         "success": True,
         "data": data
     }
+@router.post("/complexity")
+def complexity_score(
+    text: str
+):
+
+    score = len(text.split()) / 1000
+
+    return {
+        "complexity_score": score
+    }

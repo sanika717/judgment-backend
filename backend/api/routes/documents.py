@@ -1,80 +1,31 @@
-from fastapi import APIRouter
-from fastapi import Depends
-
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from database.session import get_db
 
-from services.document.document_search_service import (
-    DocumentSearchService
+from repositories.document_repository import DocumentRepository
+
+from services.document.document_delete_service import DocumentDeleteService
+
+
+# This is what main.py is expecting
+router = APIRouter(
+    prefix="/documents",
+    tags=["Documents"]
 )
 
-router = APIRouter()
 
-
-@router.get("/")
-def list_documents(
-    db: Session = Depends(get_db)
-):
-
-    documents = (
-        DocumentSearchService
-        .list_documents(db)
-    )
-
-    return {
-        "success": True,
-        "count": len(documents),
-        "data": documents
-    }
-
-
-@router.get("/{document_id}")
-def get_document(
-    document_id: int,
-    db: Session = Depends(get_db)
-):
-
-    document = (
-        DocumentSearchService
-        .get_document(
-            db,
-            document_id
-        )
-    )
-@router.delete(
-    "/{document_id}"
-)
+@router.delete("/{document_id}")
 def delete_document(
     document_id: int,
     db: Session = Depends(get_db)
 ):
+    repository = DocumentRepository(db)
+    service = DocumentDeleteService(repository)
 
-    document = (
-        DocumentRepository
-        .get_by_id(
-            db,
-            document_id
-        )
-    )
+    result = service.execute(document_id)
 
-    if not document:
-
-        return {
-            "success": False,
-            "message":
-            "Document not found"
-        }
-
-    DocumentDeleteService.delete(
-        db,
-        document
-    )
-
-    return {
-        "success": True
-    }
     return {
         "success": True,
-        "data": document
+        "data": result
     }

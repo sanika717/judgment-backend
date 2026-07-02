@@ -50,3 +50,18 @@ def search_court(
         "success": True,
         "data": results
     }
+
+@router.get("/")
+def search(
+    query: str
+):
+
+    return SearchService.search(
+        query
+    )
+@router.get("/health")
+def health():
+
+    return {
+        "status": "healthy"
+    }

@@ -1,3 +1,5 @@
+import json
+
 from services.llm.factory import (
     LLMFactory
 )
@@ -37,10 +39,32 @@ TEXT:
 {text[:6000]}
 """
 
-        response = llm.invoke(prompt)
+        try:
 
-        metadata["llm_extracted"] = (
-            response.content
-        )
+            response = llm.invoke(prompt)
+
+            result = json.loads(
+                response.content
+            )
+
+            metadata.update(
+                {
+                    "court": result.get("court"),
+                    "judge": result.get("judge"),
+                    "petitioner": result.get("petitioner"),
+                    "respondent": result.get("respondent"),
+                    "case_number": result.get("case_number"),
+                    "citation": result.get("citation"),
+                    "date": result.get("date"),
+                    "sections": result.get("sections", [])
+                }
+            )
+
+        except Exception as e:
+
+            print(
+                "LLM metadata extraction error:",
+                str(e)
+            )
 
         return metadata

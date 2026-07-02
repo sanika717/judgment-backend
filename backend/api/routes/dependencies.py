@@ -1,5 +1,7 @@
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi.security import HTTPBearer
+from fastapi.security import HTTPAuthorizationCredentials
 
 from sqlalchemy.orm import Session
 
@@ -11,17 +13,24 @@ from repositories.user_repository import (
     UserRepository
 )
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/auth/login"
-)
+
+security = HTTPBearer()
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: HTTPAuthorizationCredentials = Depends(
+        security
+    ),
     db: Session = Depends(get_db)
 ):
 
+    token = credentials.credentials
+
+    print("TOKEN:", token)
+
     payload = verify_token(token)
+
+    print("PAYLOAD:", payload)
 
     if not payload:
         raise HTTPException(
@@ -31,16 +40,18 @@ def get_current_user(
 
     email = payload.get("sub")
 
-    user = (
-        UserRepository.get_by_email(
-            db,
-            email
-        )
+    print("EMAIL:", email)
+
+    user = UserRepository.get_by_email(
+        db,
+        email
     )
+
+    print("USER:", user)
 
     if not user:
         raise HTTPException(
-            status_code=401,
+            status_code=404,
             detail="User not found"
         )
 

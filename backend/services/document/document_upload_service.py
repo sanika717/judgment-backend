@@ -24,6 +24,20 @@ class DocumentUploadService:
         user_id
     ):
 
+        existing = (
+            DocumentRepository
+            .find_by_filename(
+                db,
+                filename
+            )
+        )
+
+        if existing:
+
+            return {
+                "document": existing
+            }
+
         document = Document(
             title=title,
             original_filename=filename,

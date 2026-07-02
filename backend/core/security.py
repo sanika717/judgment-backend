@@ -82,13 +82,25 @@ def verify_token(
 ):
 
     try:
+
         payload = jwt.decode(
             token,
             settings.SECRET_KEY,
             algorithms=[settings.ALGORITHM]
         )
 
+        print("TOKEN DECODED:", payload)
+
         return payload
 
-    except JWTError:
+    except JWTError as e:
+
+        print("JWT ERROR:", str(e))
+
+        return None
+
+    except Exception as e:
+
+        print("GENERAL TOKEN ERROR:", str(e))
+
         return None

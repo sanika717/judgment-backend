@@ -13,7 +13,6 @@ class DocumentRepository:
         db.add(document)
         db.commit()
         db.refresh(document)
-
         return document
 
     @staticmethod
@@ -23,7 +22,9 @@ class DocumentRepository:
     ):
         return (
             db.query(Document)
-            .filter(Document.id == document_id)
+            .filter(
+                Document.id == document_id
+            )
             .first()
         )
 
@@ -31,6 +32,41 @@ class DocumentRepository:
     def get_all(
         db: Session
     ):
-        return db.query(
-            Document
-        ).all()
+        return (
+            db.query(Document)
+            .all()
+        )
+
+    @staticmethod
+    def get_user_documents(
+        db: Session,
+        user_id: int
+    ):
+        return (
+            db.query(Document)
+            .filter(
+                Document.user_id == user_id
+            )
+            .all()
+        )
+
+    @staticmethod
+    def count_user_documents(
+        db: Session,
+        user_id: int
+    ):
+        return (
+            db.query(Document)
+            .filter(
+                Document.user_id == user_id
+            )
+            .count()
+        )
+
+    @staticmethod
+    def delete(
+        db: Session,
+        document: Document
+    ):
+        db.delete(document)
+        db.commit()
